@@ -15,3 +15,30 @@
 
 ## Подготовка рабочего окружения
 
+### 1. Установка Vagrant
+
+`$ sudo apt update`
+
+`$ sudo apt install vagrant`
+
+### 2. Установка VirtualBox
+`$ wget -O- -q https://www.virtualbox.org/download/oracle_vbox_2016.asc | sudo gpg --dearmour -o /usr/share/keyrings/oracle_vbox_2016.gpg`
+
+`$ sudo echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle_vbox_2016.gpg] http://download.virtualbox.org/virtualbox/debian bookworm contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list`
+
+`$ sudo apt update`
+
+`$ sudo apt install virtualbox-7.0`
+
+### 3. Установка packer
+
+sudo apt install packer
+
+### 4. В домашней директории создаю поддиректорию и перехожу в нее
+
+`$ mkdir -p ./otus/hw01 && cd ./otus/hw01`
+
+### 5. Создаю Vagrantfile
+
+`vi Vagrantfile`
+
