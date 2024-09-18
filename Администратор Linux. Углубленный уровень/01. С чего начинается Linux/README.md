@@ -38,7 +38,9 @@ sudo apt install packer
 
 `$ mkdir -p ./otus/hw01 && cd ./otus/hw01`
 
-### 5. Создаю Vagrantfile
+### 5. Создать Vagrantfile
 
 `vi Vagrantfile`
 
+uname -rs
+Linux 6.1.0-25-amd64
