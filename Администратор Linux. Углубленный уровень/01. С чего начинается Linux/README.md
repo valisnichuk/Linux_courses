@@ -234,7 +234,7 @@ Last login: Thu Sep 19 12:58:16 UTC 2024 on pts/0
 >
 > `make[4]: *** Waiting for unfinished jobs....`
 
-> **Примечание:** В процессе сборки ядра может пояится ошибка:
+> **Примечание:** В процессе сборки ядра может появится ошибка:
 > 
 > `BTF: .tmp_vmlinux1: pahole (pahole) is not available`
 > 
