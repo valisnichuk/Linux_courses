@@ -252,17 +252,26 @@ Last login: Thu Sep 19 12:58:16 UTC 2024 on pts/0
 >
 > ![image](https://github.com/user-attachments/assets/abc5ab8d-603d-445a-8739-3066402285c6)
 >
-> или попробуйте установить
+> или попробуйте установить dwarves (Debugging Information Manipulation Tools (pahole & friends))
 >
 > `$ sudo yum install dwarves`
-
-
 
 #### Шаг №5: Сборка ядра
 
 Процесс сборки и компиляции ядра Linux занимает довольно продолжительное время.
 
 Во время этого процесса в терминале будут перечисляться все выбранные компоненты ядра Linux: компонент управления памятью, компонент управления процессами, драйверы аппаратных устройств, драйверы файловых систем, драйверы сетевых карт и пр.
+
+Приступая к сборке, используйте ключ `-j4` для разделения процесса сборки на несколько потоков, чтобы по максимуму использовать выделенные мощности. Собираем неспосредственно ядро и упаковываем его, производим сборку модулей, устанавливаем все по очереди, не забываем про хедеры, чтобы встали vb guest additions.
+
+```
+[root@manual-kernel-update linux-6.11]# make -j4 bzImage
+[root@manual-kernel-update linux-6.11]# make -j4 modules
+[root@manual-kernel-update linux-6.11]# 
+[root@manual-kernel-update linux-6.11]# 
+[root@manual-kernel-update linux-6.11]# 
+[root@manual-kernel-update linux-6.11]# 
+```
 
 
 
