@@ -273,6 +273,20 @@ Last login: Thu Sep 19 12:58:16 UTC 2024 on pts/0
 [root@manual-kernel-update linux-6.11]# make -j4 install
 ```
 
+```
+output:
+
+  INSTALL /boot
+VirtualBox Guest Additions: Building the modules for kernel 6.11.0.
+VirtualBox Guest Additions: Look at /var/log/vboxadd-setup.log to find out what went wrong
+```
+
+Проверяем, установились ли vb guest additions
+
+```
+[vagrant@manual-kernel-update ~]$ sudo lsmod | grep vbox
+```
+
 #### Шаг №6: Обновление загрузчика
 
 Загрузчик GRUB - это первая программа, которая запускается при включении системы.
@@ -281,7 +295,7 @@ Last login: Thu Sep 19 12:58:16 UTC 2024 on pts/0
 
 ```
 [root@manual-kernel-update ~]# grub2-mkconfig -o /boot/grub2/grub.cfg
-[root@manual-kernel-update ~]# grubby --set-default /boot/vmlinuz-5.6.9
+[root@manual-kernel-update ~]# grubby --set-default /boot/vmlinuz-6.11.0
 ```
 
 Вы можете подтвердить детали с помощью следующих команд
@@ -290,10 +304,30 @@ Last login: Thu Sep 19 12:58:16 UTC 2024 on pts/0
 [root@manual-kernel-update ~]# grubby --info=ALL | more
 [root@manual-kernel-update ~]# grubby --default-index
 [root@manual-kernel-update ~]# grubby --default-kernel
+```
+
+#### Шаг №7: Перезагрузка системы
+
+После выполнения вышеописанных действий перезагрузите свой компьютер. Когда система загрузится, проверьте версию используемого ядра с помощью следующей команды:
+
+```
 [root@manual-kernel-update ~]# reboot
 ```
 
+Проверим версию ядра
 
+```
+$ vagrant ssh
+[root@manual-kernel-update ~]# uname -rs
+```
+
+```
+output:
+
+Linux 6.11.0
+```
+
+Как видите, теперь в системе установлено собранное нами ядро Linux 6.11.0
 
 
 
