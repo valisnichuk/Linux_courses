@@ -266,14 +266,32 @@ Last login: Thu Sep 19 12:58:16 UTC 2024 on pts/0
 
 ```
 [root@manual-kernel-update linux-6.11]# make -j4 bzImage
-[root@manual-kernel-update linux-6.11]# make -j4 modules
-[root@manual-kernel-update linux-6.11]# 
-[root@manual-kernel-update linux-6.11]# 
-[root@manual-kernel-update linux-6.11]# 
-[root@manual-kernel-update linux-6.11]# 
+[root@manual-kernel-update linux-6.11]# make -j4 modules  
+[root@manual-kernel-update linux-6.11]# make -j4
+[root@manual-kernel-update linux-6.11]# make -j4 modules_install
+[root@manual-kernel-update linux-6.11]# make -j4 headers_install
+[root@manual-kernel-update linux-6.11]# make -j4 install
 ```
 
+#### Шаг №6: Обновление загрузчика
 
+Загрузчик GRUB - это первая программа, которая запускается при включении системы.
+
+**CentOS/RHEL/Scientific Linux:**
+
+```
+[root@manual-kernel-update ~]# grub2-mkconfig -o /boot/grub2/grub.cfg
+[root@manual-kernel-update ~]# grubby --set-default /boot/vmlinuz-5.6.9
+```
+
+Вы можете подтвердить детали с помощью следующих команд
+
+```
+[root@manual-kernel-update ~]# grubby --info=ALL | more
+[root@manual-kernel-update ~]# grubby --default-index
+[root@manual-kernel-update ~]# grubby --default-kernel
+[root@manual-kernel-update ~]# reboot
+```
 
 
 
