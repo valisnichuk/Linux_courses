@@ -191,6 +191,56 @@ root@manual-kernel-update:~# apt install git fakeroot build-essential ncurses-de
 
 Данная команда установит следуюшие пакеты:
 
+<table>
+    <thead>
+        <tr>
+            <th align="center">Пакет</th>
+            <th align="center">Описание</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td align="center"><strong>git</strong></td>
+            <td>Утилита, помогающая отслеживать изменения в файлах исходного кода. А в случае какой-либо ошибки, эти изменения можно будет откатить.</td>
+        </tr>
+        <tr>
+            <td align="center"><strong>fakeroot</strong></td>
+            <td>Позволяет запускать команду в среде, имитирующей привилегии root.</td>
+        </tr>
+        <tr>
+            <td align="center"><strong>build-essential</strong></td>
+            <td>Набор различных утилит для компиляции программ (компиляторы gcc, g++ и пр.).</td>
+        </tr>
+        <tr>
+            <td align="center"><strong>ncurses-dev</strong></td>
+            <td>Библиотека, предоставляющая API для программирования текстовых терминалов.</td>
+        </tr>
+        <tr>
+            <td align="center"><strong>xz-utils</strong></td>
+            <td>Утилита для работы с архивами в .xz-формате.</td>
+        </tr>
+        <tr>
+            <td align="center"><strong>libssl-dev</strong></td>
+            <td>Библиотека для разработки и поддержки протоколов шифрования SSL и TLS.</td>
+        </tr>
+        <tr>
+            <td align="center"><strong>bc</strong> (Basic Calculator)</td>
+            <td>Интерактивный интерпретатор, позволяющий выполнять скрипты с различными математическими выражениями.</td>
+        </tr>
+        <tr>
+            <td align="center"><strong>flex</strong> (Fast Lexical Analyzer Generator)</td>
+            <td>Утилита генерации программ, которые могут распознавать в тексте шаблоны.</td>
+        </tr>
+        <tr>
+            <td align="center"><strong>libelf-dev</strong></td>
+            <td>Библиотека, используемая для работы с ELF-файлами (исполняемые файлы, файлы объектного кода и дампы ядра).</td>
+        </tr>
+        <tr>
+            <td align="center"><strong>bison</strong></td>
+            <td>Создает из набора правил программу анализа структуры текстовых файлов.</td>
+        </tr>
+    </tbody>
+</table>
 
 #### Шаг №4: Конфигурирование ядра
 
