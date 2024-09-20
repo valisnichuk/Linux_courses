@@ -182,6 +182,16 @@ Last login: Thu Sep 19 12:58:16 UTC 2024 on pts/0
 [root@manual-kernel-update ~]# yum install ncurses-devel bison flex elfutils-libelf-devel openssl-devel hmaccalc zlib-devel binutils-devel bc vim make gcc grub2
 ```
 
+**Debian/Ubuntu/Linux Mint:**
+
+```
+root@manual-kernel-update:~# apt update
+root@manual-kernel-update:~# apt install git fakeroot build-essential ncurses-dev xz-utils libssl-dev bc flex libelf-dev bison
+```
+
+Данная команда установит следуюшие пакеты:
+
+
 #### Шаг №4: Конфигурирование ядра
 
 Исходный код ядра Linux уже содержит стандартный файл конфигурации с набором различных настроек. Однако вы можете сами изменить его в соответствии с вашими потребностями.
