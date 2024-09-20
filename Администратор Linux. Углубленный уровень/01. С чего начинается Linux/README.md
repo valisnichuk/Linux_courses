@@ -370,6 +370,22 @@ VirtualBox Guest Additions: Look at /var/log/vboxadd-setup.log to find out what 
 [root@manual-kernel-update ~]# grubby --default-kernel
 ```
 
+**Debian/Ubuntu/Linux Mint:**
+
+Команда `make install` автоматически обновит загрузчик.
+
+Для того, чтобы обновить загрузчик вручную, вам необходимо сначала обновить `initramfs` до новой версии ядра:
+
+```
+$ sudo update-initramfs -c -k 6.11.0
+```
+
+Затем обновить загрузчик GRUB с помощью следующей команды:
+
+```
+$ sudo update-grub2
+```
+
 #### Шаг №7: Перезагрузка системы
 
 После выполнения вышеописанных действий перезагрузите свой компьютер. Когда система загрузится, проверьте версию используемого ядра с помощью следующей команды:
