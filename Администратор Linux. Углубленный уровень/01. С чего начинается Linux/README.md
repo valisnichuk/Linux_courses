@@ -315,6 +315,10 @@ root@manual-kernel-update:~# apt install git fakeroot build-essential ncurses-de
 > или попробуйте установить dwarves (Debugging Information Manipulation Tools (pahole & friends))
 >
 > `$ sudo yum install dwarves`
+>
+> или
+>
+> `$ sudo apt install dwarves`
 
 #### Шаг №5: Сборка ядра
 
