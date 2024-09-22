@@ -409,11 +409,82 @@ Linux 6.11.0
 
 Как видите, теперь в системе установлено собранное нами ядро Linux 6.11.0
 
+### Установка VirtualBox Guest Additions
 
+1. В VirtualBox идем в меню «Устройства» -> «Подключить образ диска Дополнений гостевой ОС…» (Devices -> Install Guest Additions…)
 
+2. Под root выполняем
 
+```
+mkdir /mnt/cdrom
+mount /dev/cdrom /mnt/cdrom
+sh /mnt/cdrom/VBoxLinuxAdditions.run
+umount /mnt/cdrom
+```
 
+Будет смонтирован cdrom и произведена компиляция и установка дополнений vbox.
 
+Процесс установки выглядит примерно так:
 
+```
+Verifying archive integrity...  100%   MD5 checksums are OK. All good.
+Uncompressing VirtualBox 7.0.12 Guest Additions for Linux  100%
+VirtualBox Guest Additions installer
+Copying additional installer modules ...
+Installing additional modules ...
+VirtualBox Guest Additions: Starting.
+VirtualBox Guest Additions: Setting up modules
+VirtualBox Guest Additions: Building the VirtualBox Guest Additions kernel
+modules.  This may take a while.
+VirtualBox Guest Additions: To build modules for other installed kernels, run
+VirtualBox Guest Additions:   /sbin/rcvboxadd quicksetup <version>
+VirtualBox Guest Additions: or
+VirtualBox Guest Additions:   /sbin/rcvboxadd quicksetup all
+VirtualBox Guest Additions: Building the modules for kernel 5.15.0-91-generic.
+update-initramfs: Generating /boot/initrd.img-5.15.0-91-generic
+VirtualBox Guest Additions: Running kernel modules will not be replaced until
+the system is restarted or 'rcvboxadd reload' triggered
+VirtualBox Guest Additions: reloading kernel modules and services
+VirtualBox Guest Additions: kernel modules and services 7.0.12 r159484 reloaded
+VirtualBox Guest Additions: NOTE: you may still consider to re-login if some
+user session specific services (Shared Clipboard, Drag and Drop, Seamless or
+Guest Screen Resize) were not restarted automatically
+```
 
+После этого нужно перезагрузить виртуальную машину:
 
+```
+reboot
+```
+
+После перезагрузки можно проверить факт загрузки модулей ядра командой
+
+```
+# lsmod | grep vbox
+```
+```
+output:
+
+vboxguest             434176  2
+```
+
+и факт запуска VBoxService командой
+
+```
+# ps -auxw | grep [v]box
+```
+
+```
+output:
+
+root         804  0.0  0.1 290492  3028 ?        Sl   15:50   0:00 /usr/sbin/VBoxService --pidfile /var/run/vboxadd-service.sh
+```
+
+После установки VirtualBox Guest Additions будут доступны такие функции как Общий буфер обмена, Drag’n Drop и Общие папки.
+
+**P.S. Для удаления VirtualBox Guest Additions необходимо запустить:**
+
+```
+mount /dev/cdrom /mnt/cdrom
+sh /mnt/cdrom/VBoxLinuxAdditions.run uninstall
+```
