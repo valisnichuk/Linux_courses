@@ -106,13 +106,13 @@
 
 ```
 chmod +x simulate_raid_failure.sh
-./simulate_raid_failure.sh fail /dev/sdb1
+./simulate_raid_failure.sh fail /dev/sdb
 ```
 
 **2. Восстановление Диска:**
 
 ```
-./simulate_raid_failure.sh recover /dev/sdb1
+./simulate_raid_failure.sh recover /dev/sdb
 ```
 
 **Объяснение Скрипта:**
