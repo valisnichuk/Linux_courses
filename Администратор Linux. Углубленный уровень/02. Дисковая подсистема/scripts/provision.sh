@@ -51,21 +51,22 @@ sudo dracut --force
 
 # Создание GPT разделов и партиций
 parted -s /dev/md0 mklabel gpt
-parted /dev/md0 mkpart primary ext4 0% 25%
-parted /dev/md0 mkpart primary ext4 25% 50%
-parted /dev/md0 mkpart primary ext4 50% 75%
-parted /dev/md0 mkpart primary ext4 75% 100%
+parted /dev/md0 mkpart primary ext4 0% 20%
+parted /dev/md0 mkpart primary ext4 20% 40%
+parted /dev/md0 mkpart primary ext4 40% 60%
+parted /dev/md0 mkpart primary ext4 60% 80%
+parted /dev/md0 mkpart primary ext4 80% 100%
 
-for i in $(seq 1 4); do
+for i in $(seq 1 5); do
   sudo mkfs.ext4 /dev/md0p$i;
 done
 
 # Создание точек монтирования
-sudo mkdir -p /mnt/part{1,2,3,4}
+sudo mkdir -p /mnt/part{1,2,3,4,5}
 
 # Монтирование партиций
 echo "Монтирование партиций"
-for i in $(seq 1 4); do
+for i in $(seq 1 5); do
   mount /dev/md0p$i /mnt/part$i
 done
 
@@ -75,6 +76,7 @@ sudo bash -c "echo '/dev/md0p1 /mnt/part1 ext4 defaults,nofail,auto 0 0' >> /etc
 sudo bash -c "echo '/dev/md0p2 /mnt/part2 ext4 defaults,nofail,auto 0 0' >> /etc/fstab"
 sudo bash -c "echo '/dev/md0p3 /mnt/part3 ext4 defaults,nofail,auto 0 0' >> /etc/fstab"
 sudo bash -c "echo '/dev/md0p4 /mnt/part4 ext4 defaults,nofail,auto 0 0' >> /etc/fstab"
+sudo bash -c "echo '/dev/md0p5 /mnt/part5 ext4 defaults,nofail,auto 0 0' >> /etc/fstab"
 
 # Проверка
 echo "Проверка состояния системы..."
