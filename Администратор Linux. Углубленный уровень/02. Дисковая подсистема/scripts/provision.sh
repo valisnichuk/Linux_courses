@@ -1,95 +1,113 @@
-#!/bin/bash
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
 
-#set -e
+home = ENV['HOME']
 
-# Переменные
-RAID_LEVEL=${RAID_LEVEL:-1}      # Уровень RAID по умолчанию RAID1
-RAID_DEVICES=${RAID_DEVICES:-2}  # Количество устройств в RAID
-RAID_NAME="/dev/md0"
-
-echo $RAID_LEVEL, $RAID_DEVICES, $RAID_NAME, $MOUNT_POINT
-
-# Функция для создания GPT разделов и партиций
-create_partitions() {
-  local disk=$1
-  echo "Создание GPT разделов на $disk"
-  sudo sgdisk --zap-all $disk
-  sudo sgdisk -o $disk
-  for i in {1..5}; do
-    sudo sgdisk -n $i:0:+100M $disk
-  done
-  sudo partprobe $disk
+MACHINES = {
+  :otuslinux => {
+    :box_name => "generic/centos9s",
+    :ip_addr => '192.168.11.101',
+    :disks => {
+      :sata1 => {
+        :dfile => 'disks/sata1.vdi',
+        :size => 2048, # Megabytes
+        :port => 1
+      },
+      :sata2 => {
+        :dfile => 'disks/sata2.vdi',
+        :size => 2048, # Megabytes
+        :port => 2
+      },
+      :sata3 => {
+        :dfile => 'disks/sata3.vdi',
+        :size => 2048, # Megabytes
+        :port => 3
+      },
+      :sata4 => {
+        :dfile => 'disks/sata4.vdi',
+        :size => 2048, # Megabytes
+        :port => 4
+      },
+      :sata5 => {
+        :dfile => 'disks/sata5.vdi',
+        :size => 2048, # Megabytes
+        :port => 5
+      }
+    },
+    # Конфигурация RAID: выберите уровень RAID (0,1,5,10)
+    raid_level: 10,    # Можно изменить на 0, 5, 10
+    raid_devices: 5   # Количество устройств для RAID
+  }
 }
 
-# Установка необходимых пакетов
-echo "Установка необходимых пакетов..."
-sudo yum install -y mdadm smartmontools hdparm gdisk
+Vagrant.configure("2") do |config|
+  MACHINES.each do |boxname, boxconfig|
+    config.vm.define boxname do |box|
+      box.vm.box = boxconfig[:box_name]
+      box.vm.hostname = boxname.to_s
 
-# Настройка RAID
-echo "Настройка RAID..."
-case $RAID_LEVEL in
-  0)
-    RAID_PARAMS="--level=0 --raid-devices=$RAID_DEVICES"
-    ;;
-  1)
-    RAID_PARAMS="--level=1 --raid-devices=$RAID_DEVICES"
-    ;;
-  5)
-    RAID_PARAMS="--level=5 --raid-devices=$RAID_DEVICES"
-    ;;
-  10)
-    RAID_PARAMS="--level=10 --raid-devices=$RAID_DEVICES"
-    ;;
-  *)
-    echo "Неподдерживаемый уровень RAID: $RAID_LEVEL. Используем RAID1."
-    RAID_PARAMS="--level=1 --raid-devices=2"
-    ;;
-esac
+      # Настройка приватной сети
+      box.vm.network "private_network", ip: boxconfig[:ip_addr]
 
-# Определение устройств для RAID
-RAID_DEVICES_LIST=()
-for i in $(seq 1 $RAID_DEVICES); do
-  char=$(printf "\\$(printf '%03o' $((97 + i)))")
-  sudo mdadm --zero-superblock --force /dev/sd$char
-  RAID_DEVICES_LIST+=("/dev/sd$char")
-done
+      box.vm.provider :virtualbox do |vb|
+        vb.memory = 2048
 
-echo "Создание RAID массива $RAID_NAME с параметрами: $RAID_PARAMS"
-sudo mdadm --create --metadata=0.90 --verbose $RAID_NAME $RAID_PARAMS "${RAID_DEVICES_LIST[@]}"
+        # Определяем абсолютный путь к директории дисков
+        disk_dir = File.join(home, 'VirtualBox VMs')
+        unless Dir.exist?(disk_dir)
+          puts "Создаем директорию для дисков: #{disk_dir}"
+          Dir.mkdir(disk_dir)
+        end
 
-# Сохранение конфигурации mdadm...
-echo "Сохранение конфигурации mdadm..."
-sudo mkdir /etc/mdadm
-sudo mdadm --detail --scan | sudo tee -a /etc/mdadm/mdadm.conf
-sudo dracut --force
+        # Добавляем SATA контроллер
+        #vb.customize ["storagectl", :id, "--name", "SATA Controller", "--add", "sata", "--controller", "IntelAHCI"]
 
-# Создание GPT разделов и партиций
-parted -s /dev/md0 mklabel gpt
-parted /dev/md0 mkpart primary ext4 0% 25%
-parted /dev/md0 mkpart primary ext4 25% 50%
-parted /dev/md0 mkpart primary ext4 50% 75%
-parted /dev/md0 mkpart primary ext4 75% 100%
+        # Цикл для добавления дисков
+        boxconfig[:disks].each do |dname, dconf|
+          disk_path = File.expand_path(dconf[:dfile], disk_dir)
 
-for i in $(seq 1 4); do
-  sudo mkfs.ext4 /dev/md0p$i;
-done
+          # Проверяем, существует ли уже диск
+          unless File.exist?(disk_path)
+            puts "Создаем диск #{disk_path}"
+            vb.customize [
+              'createhd',
+              '--filename', disk_path,
+              '--variant', 'Fixed',
+              '--size', dconf[:size]
+            ]
+          else
+            puts "Диск #{disk_path} уже существует. Пропускаем создание."
+          end
 
-# Создание точек монтирования
-sudo mkdir -p /mnt/part{1,2,3,4}
+          # Присоединяем диск к контроллеру
+          vb.customize [
+            'storageattach', :id,
+            '--storagectl', 'SATA Controller',
+            '--port', dconf[:port],
+            '--device', 0,
+            '--type', 'hdd',
+            '--medium', disk_path
+          ]
+        end
+      end
 
-# Монтирование партиций
-echo "Монтирование партиций"
-for i in $(seq 1 4); do
-  mount /dev/md0p$i /mnt/part$i
-done
+      # Provisioning скрипт
+      box.vm.provision "shell", path: "scripts/provision.sh", env: {
+        RAID_LEVEL: MACHINES[:otuslinux][:raid_level],
+        RAID_DEVICES: MACHINES[:otuslinux][:raid_devices]
+      }
 
-# Добавление в fstab
-echo "Добавление партиций в /etc/fstab..."
-sudo bash -c "echo '/dev/md0p1 /mnt/part1 ext4 defaults,nofail,auto 0 0' >> /etc/fstab"
-sudo bash -c "echo '/dev/md0p2 /mnt/part2 ext4 defaults,nofail,auto 0 0' >> /etc/fstab"
-sudo bash -c "echo '/dev/md0p3 /mnt/part3 ext4 defaults,nofail,auto 0 0' >> /etc/fstab"
-sudo bash -c "echo '/dev/md0p4 /mnt/part4 ext4 defaults,nofail,auto 0 0' >> /etc/fstab"
 
-# Проверка
-echo "Проверка состояния системы..."
-lsblk
+      box.vm.provision "shell", inline: <<-SHELL
+        # Настройка SSH для root
+        mkdir -p /root/.ssh
+        cp /home/vagrant/.ssh/authorized_keys /root/.ssh/
+
+      SHELL
+    end
+  end
+
+  # Синхронизация с использованием rsync
+  config.vm.synced_folder "scripts", "/home/vagrant/scripts", type: "rsync", rsync__auto: true
+
+end
